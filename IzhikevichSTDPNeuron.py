@@ -33,7 +33,7 @@ class IzhikevichNeuron:
 
     def register_input(self, input_neuron):
         self.input_list.append(input_neuron)
-        self.weight_list.append(5 * np.random.rand(1)[0] + 10)
+        self.weight_list.append(10 * np.random.rand(1)[0] + 10)
 
     def get_voltage(self):
         return self.v
@@ -89,18 +89,24 @@ class IzhikevichNeuron:
         self.time += 1
 
 
+time = 5000
+
 neuron1 = IzhikevichNeuron()
 neuron2 = IzhikevichNeuron()
+neuron3 = IzhikevichNeuron()
 
-neuron2.register_input(neuron1)
+neuron3.register_input(neuron1)
+neuron3.register_input(neuron2)
 
 membrane_voltage_1 = []
 membrane_voltage_2 = []
-synaptic_weight_12 = []
+membrane_voltage_3 = []
+synaptic_weight_13 = []
+synaptic_weight_23 = []
 current_list1 = []
 current_list2 = []
 
-for i in range(1000):
+for i in range(time):
     current_input1 = 5 * np.random.normal(0,1)
     current_input2 = 5 * np.random.normal(0, 1)
 
@@ -108,19 +114,24 @@ for i in range(1000):
     current_list2.append(current_input2)
     membrane_voltage_1.append(neuron1.get_voltage())
     membrane_voltage_2.append(neuron2.get_voltage())
-    synaptic_weight_12.append(neuron2.get_synaptic_weight(0))
+    membrane_voltage_3.append(neuron3.get_voltage())
+    synaptic_weight_13.append(neuron3.get_synaptic_weight(0))
+    synaptic_weight_23.append(neuron3.get_synaptic_weight(1))
 
     neuron1.evaluate_state(current_input1)
     neuron2.evaluate_state(current_input2)
+    neuron3.evaluate_state(0)
 
     neuron1.evaluate_synaptic_rule()
     neuron2.evaluate_synaptic_rule()
+    neuron3.evaluate_synaptic_rule()
 
     neuron1.update_state()
     neuron2.update_state()
+    neuron3.update_state()
 
 
-time = range(1000)
+time = range(time)
 
 # ax1 = plt.subplot(511)
 # plt.plot(time, current_list1)
@@ -139,19 +150,26 @@ time = range(1000)
 # plt.ylim(-80, 50)
 #
 # ax5 = plt.subplot(515, sharex=ax1)
-# plt.plot(time, synaptic_weight_12)
+# plt.plot(time, synaptic_weight_13)
 #
 # plt.show()
 
-ax1 = plt.subplot(311)
+ax1 = plt.subplot(511)
 plt.plot(time, membrane_voltage_1)
 plt.ylim(-80, 30)
 
-ax2 = plt.subplot(312, sharex=ax1)
+ax2 = plt.subplot(512, sharex=ax1)
 plt.plot(time, membrane_voltage_2)
 plt.ylim(-80, 30)
 
-ax3 = plt.subplot(313, sharex=ax1)
-plt.plot(time, synaptic_weight_12)
+ax3 = plt.subplot(513, sharex=ax1)
+plt.plot(time, membrane_voltage_3)
+plt.ylim(-80, 30)
+
+ax4 = plt.subplot(514, sharex=ax1)
+plt.plot(time, synaptic_weight_13)
+
+ax5 = plt.subplot(515, sharex=ax1)
+plt.plot(time, synaptic_weight_23)
 
 plt.show()
